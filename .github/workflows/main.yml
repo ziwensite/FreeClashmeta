@@ -1,0 +1,36 @@
+name: Daily Update Clashmeta
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"  # 每天0点UTC时间触发
+
+jobs:
+  update-clashmeta:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ziwensite/FreeClashmeta repo
+        uses: actions/checkout@v2
+        with:
+          repository: ziwensite/FreeClashmeta
+         # token: ${{ secrets.GITHUB_TOKEN }}
+          path: FreeClashmeta
+
+      - name: Fetch Barabama/FreeNodes content
+        id: fetch-content
+        run: |
+          wget -qO- https://raw.githubusercontent.com/Barabama/FreeNodes/main/nodes/clashmeta.txt -O ./clashmeta.txt
+
+      - name: Update index.html in ziwensite/FreeClashmeta
+        working-directory: FreeClashmeta
+        run: |
+          # 清除并写入新的内容到 index.html
+          echo -n "" > index.html
+          cat ../clashmeta.txt >> index.html
+          
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Update index.html with clashmeta content from Barabama/FreeNodes"
+          git push origin main
+          
