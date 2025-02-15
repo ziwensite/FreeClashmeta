@@ -3,6 +3,7 @@ name: Daily Update Clashmeta
 on:
   schedule:
     - cron: "0 0 * * 0"  # 每天0点UTC时间触发
+  workflow_dispatch:
 
 jobs:
   update-clashmeta:
